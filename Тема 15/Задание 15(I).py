@@ -10,11 +10,11 @@
 Ответ: 65
 '''
 
-for a in range(1, 128):
-    f = True
-    for x in range(1, 128):
-        if not (x & 77 == 0 or x & 12 != 0 or x & a != 0):
-            f = False
+
+for a in range(128):
+    for x in range(128):
+        if not ((x & 77 != 0) <= ((x & 12 == 0) <= (x & a != 0))):
             break
-    if f:
+    else:
         print(a)
+        break
