@@ -1,9 +1,9 @@
 from itertools import permutations
 
-table  = '12 17 21 27 28 34 35 37 43 47 53 57 67 68 71 72 73 74 75 76 78 82 86 87'
-graph = 'AB BA AC CA AD DA AE EA AF FA AG GA AH HA BC CB CD DC EF FE FG GF GH HG'
+table  = '16 17 23 24 26 32 34 42 43 45 54 57 61 62 67 71 75 76'
+graph = 'АБ БА БВ ВБ ВГ ГВ ГД ДГ ДЕ ЕД ЕК КЕ АК КА ДВ ВД КБ БК'
 
-for p in permutations('ABCDEFGH'):
+for p in permutations(sorted('ДЕКАБВГ')):
     new_graph = table
     for i in range(1, 9):
         new_graph = new_graph.replace(str(i), p[i - 1])
