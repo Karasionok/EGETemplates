@@ -5,24 +5,24 @@ from datetime import datetime
 
 import pytest
 import sqlite3
-
+'''
 from matplotlib import pyplot as plt, patches, animation
 from matplotlib.colors import Normalize, LinearSegmentedColormap
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from sympy.physics.quantum.circuitplot import pyplot
-
+'''
 
 def create_new_db():
     with sqlite3.connect('result.db') as connection:
         cursor = connection.cursor()
         cursor.execute('''
-        CREATE TABLE IF NOT EXISTS test (
-            date_time   DATETIME,
-            task_number BIGINT,
-            task_type   INTEGER,
-            result      INTEGER
-        )
-        ''')
+                       CREATE TABLE IF NOT EXISTS test (
+                                                           date_time   DATETIME,
+                                                           task_number BIGINT,
+                                                           task_type   INTEGER,
+                                                           result      INTEGER
+                       )
+                       ''')
 
 def add_result(date_time, task_number, task_type, result):
     with sqlite3.connect('result.db') as connection:
@@ -51,7 +51,7 @@ def get_results():
 
 def clamp(n, smallest, largest):
     return max(smallest, min(n, largest))
-
+'''
 def show_available_task(tasks: list):
     square_size = 1   # Размер квадрата
     spacing = 0.2     # Промежуток между квадратами
@@ -206,3 +206,4 @@ def pytest_sessionfinish(session, exitstatus):
         os.system('open results.png')
     elif sys.platform.startswith('win'):
         os.startfile('results.png')
+'''
