@@ -1,209 +1,214 @@
+import hashlib
 import os
-import re
-import sys
+import sqlite3
 from datetime import datetime
 
-import pytest
-import sqlite3
-'''
-from matplotlib import pyplot as plt, patches, animation
+from matplotlib import pyplot as plt
 from matplotlib.colors import Normalize, LinearSegmentedColormap
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from sympy.physics.quantum.circuitplot import pyplot
-'''
+
+
+def repo_root():
+    # Корень репозитория — родительская папка для tests/
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+
+def db_path():
+    # БД всегда в tests/result.db относительно корня репозитория
+    return os.path.join(repo_root(), 'tests', 'result.db')
+
 
 def create_new_db():
-    with sqlite3.connect('result.db') as connection:
+    os.makedirs(os.path.dirname(db_path()), exist_ok=True)
+    with sqlite3.connect(db_path()) as connection:
         cursor = connection.cursor()
         cursor.execute('''
-                       CREATE TABLE IF NOT EXISTS test (
-                                                           date_time   DATETIME,
-                                                           task_number BIGINT,
-                                                           task_type   INTEGER,
-                                                           result      INTEGER
-                       )
-                       ''')
+        CREATE TABLE IF NOT EXISTS test (
+            date_time   DATETIME,
+            task_number BIGINT,
+            task_type   INTEGER,
+            result      INTEGER
+        )
+        ''')
+
 
 def add_result(date_time, task_number, task_type, result):
-    with sqlite3.connect('result.db') as connection:
+    if not os.path.exists(db_path()):
+        create_new_db()
+    with sqlite3.connect(db_path()) as connection:
         cursor = connection.cursor()
         cursor.execute('INSERT INTO test (date_time, task_number, task_type, result) VALUES (?, ?, ?, ?)',
                        (date_time, task_number, task_type, result))
 
+
 def update_result(date_time, task_number, task_type, result):
-    with sqlite3.connect('result.db') as connection:
+    with sqlite3.connect(db_path()) as connection:
         cursor = connection.cursor()
         cursor.execute('UPDATE test SET date_time = ?, result = ? WHERE task_type = ? AND task_number = ?',
                        (date_time, result, task_type, task_number))
 
+
 def get_result(task_number, task_type):
-    with sqlite3.connect('result.db') as connection:
+    with sqlite3.connect(db_path()) as connection:
         cursor = connection.cursor()
         cursor.execute('SELECT * FROM test WHERE task_number = ? AND task_type = ?',
                        (task_number, task_type))
         return cursor.fetchone()
 
+
 def get_results():
-    with sqlite3.connect('result.db') as connection:
+    with sqlite3.connect(db_path()) as connection:
         cursor = connection.cursor()
         cursor.execute('SELECT * FROM test')
         return cursor.fetchall()
 
-def clamp(n, smallest, largest):
-    return max(smallest, min(n, largest))
-'''
-def show_available_task(tasks: list):
-    square_size = 1   # Размер квадрата
-    spacing = 0.2     # Промежуток между квадратами
-    columns = 10      # Количество значений в строке
-    fig, ax = plt.subplots()
-    for i, value in enumerate(tasks):
-        x = (i % columns) * (square_size + spacing)
-        y = -(i // columns) * (square_size + spacing)
-        square = plt.Rectangle((x, y), square_size, square_size, facecolor='blue', edgecolor='black')
-        ax.add_patch(square)
-        ax.text(x + square_size / 2, y + square_size / 2, str(value), ha='center', va='center', color='white')
-    ax.set_xlim(0, columns * (square_size + spacing) - spacing)
-    ax.set_ylim(-((len(tasks) // columns) + 1) * (square_size + spacing), square_size + 0.5)
-    ax.set_aspect('equal')
-    ax.axis('off')
-    ax.set_title('Задания, доступные для исправления')
-    return fig
 
-def show_task_results(current_passed, current_failed):
-    fig, ax = plt.subplots(figsize=(10, 3))
-    for i, (task_type, task_number) in enumerate(current_passed):
-        rect = patches.Rectangle((i, 1), 1, 1, linewidth=1, edgecolor='green', facecolor='lightgreen')
-        ax.add_patch(rect)
-        ax.text(i + 0.5, 1.5, f'{task_type}-{task_number}', ha='center', va='center', color='black')
-    for i, (task_type, task_number) in enumerate(current_failed):
-        rect = patches.Rectangle((i, 0), 1, 1, linewidth=1, edgecolor='red', facecolor='lightcoral')
-        ax.add_patch(rect)
-        ax.text(i + 0.5, 0.5, f'{task_type}-{task_number}', ha='center', va='center', color='black')
-    ax.set_xlim(0, max(len(current_passed), len(current_failed)))
-    ax.set_ylim(-0.5, 2)
-    ax.set_xticks([])
-    ax.set_yticks([0.5, 1.5])
-    ax.set_yticklabels(['Неправильно', 'Правильно'])
-    ax.set_title('Результаты текущей сессии')
-    return fig
+def show_common_progress():
+    """
+    Получить из БД все разультаты и сгруппировать их по полю task_type.
+    Для каждого типа посчитать процент правильных ответов среди всех решенных заданий данного типа,
+    в подсчёт включаются только данные за последние 5 дат.
+    При этом необходимо находить среднее значение по каждому номеру задания (task_number).
+    Построить гистограмму, где на оси X будут номера тем, а на Y — процент правильных ответов.
+    """
+    from collections import defaultdict
 
-def plot_preparation_level(types):
-    t = [i + 1 for i in range(27)]
-    values = [item[4] for item in types]
-    norm = Normalize(vmin=0, vmax=100)
-    cmap = LinearSegmentedColormap.from_list("red_green", ["red", "orange", "green"])
-    colors = cmap(norm(values))
-    fig, ax = plt.subplots(figsize=(12, 5))
-    bars = ax.bar(t, values, width=0.8, color=colors)
-    for bar in bars:
-        yval = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width() / 2, yval / 2, round(yval, 2),
-                ha='center', va='center')
-    ax.set_xlabel('Тип задания')
-    ax.set_ylabel('Значение')
-    ax.set_title('Уровень подготовки')
-    ax.set_xticks(t)
-    return fig
-
-def extract_test_info(test_string):
-    pattern = r'test_scripts\[(\d+)-[a-f0-9]+-TestType_(\d+)\]'
-    match = re.search(pattern, test_string)
-    if match:
-        test_number = match.group(1)
-        test_type = match.group(2)
-        return int(test_type), int(test_number)
-    else:
-        return None, None
-
-@pytest.hookimpl()
-def pytest_sessionstart(session):
-    if not os.path.exists('result.db'):
-        create_new_db()
-    old_results = [(res[2], res[1]) for res in get_results()]
-    session.old_results = old_results
-    session.results = dict()
-
-@pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-    outcome = yield
-    result = outcome.get_result()
-    if result.when == 'call':
-        item.session.results[item] = result
-
-@pytest.hookimpl()
-def pytest_sessionfinish(session, exitstatus):
-    current_passed = []
-    current_failed = []
-    now = datetime.now()
-    for result in filter(lambda r: r.outcome != 'skipped', session.results.values()):
-        type, task = extract_test_info(result.nodeid)
-        old_solution = None
-        if (type, task) in session.old_results:
-            old_solution = get_result(task, type)
-        # Если ранее данное задание не решалось или пришло время перерешивания
-        if (session.old_results.count((type, task)) == 0 or
-                (old_solution is not None and abs((datetime.fromtimestamp(old_solution[0]) - datetime.now()).days) >= 14)):
-            # Если решение есть в БД
-            if old_solution is not None:
-                update_result(now.timestamp(), task, type, 1 if result.passed else 0)
-            else:
-                task_path = f'../Тема {type}/Задания/Задание {task}.py'
-                if not result.passed and os.path.exists(task_path):
-                    os.rename(task_path, f'../Тема {type}/Задания/-Задание {task}.py')
-                add_result(now.timestamp(), task, type, 1 if result.passed else 0)
-            if result.passed:
-                current_passed.append((type, task))
-            else:
-                current_failed.append((type, task))
     results = get_results()
-    # тип, правильно, неправильно, всего, результат
-    #  0       1           2         3        4
-    types = [[i + 1, 0, 0, 0, 0] for i in range(27)]
-    for item in session.items:
-        type, task = extract_test_info(item.nodeid)
-        types[type - 1][3] += 1
-    # date_time, task_number, task_type, result
-    available_task = []
-    for res in results:
-        if abs((datetime.fromtimestamp(res[0]) - now).days) >= 14:
-            available_task.append(f'{res[2]}.{res[1]}')
-        types[res[2] - 1][1] += 1 if res[3] == 1 else 0
-        types[res[2] - 1][2] += 1 if res[3] == 0 else 0
 
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(12, 16))
+    # type -> date -> task_number -> list[result]
+    type_date_task_values = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
 
-    available_task_fig = show_available_task(available_task)
-    available_task_canvas = FigureCanvas(available_task_fig)
-    available_task_canvas.draw()
-    available_task_rgba_buffer = available_task_canvas.buffer_rgba()
-    ax3.imshow(available_task_rgba_buffer, aspect='equal')
-    ax3.axis('off')
+    for dt, task_number, task_type, result in results:
+        # Нормализация результата к 0/1, некорректные значения/строки пропускаем
+        try:
+            r = int(result)
+            r = 1 if r == 1 else 0
+        except Exception:
+            continue
 
-    for t in types:
-        if t[3] > 0:
-            t[4] = clamp((100 - ((t[2] + t[3] - t[1]) / t[3]) * 100), 0, 100)
+        # Преобразуем дату в объект date
+        date_only = None
+        try:
+            ts = float(dt)
+            date_only = datetime.fromtimestamp(ts).date()
+        except Exception:
+            try:
+                date_only = datetime.fromisoformat(str(dt)).date()
+            except Exception:
+                continue
 
-    task_results_fig = show_task_results(current_passed, current_failed)
-    task_results_canvas = FigureCanvas(task_results_fig)
-    task_results_canvas.draw()
-    task_results_rgba_buffer = task_results_canvas.buffer_rgba()
-    ax1.imshow(task_results_rgba_buffer, aspect='equal')
-    ax1.axis('off')
+        type_date_task_values[int(task_type)][date_only][int(task_number)].append(r)
 
-    preparation_level_fig = plot_preparation_level(types)
-    preparation_level_canvas = FigureCanvas(preparation_level_fig)
-    preparation_level_canvas.draw()
-    preparation_level_rgba_buffer = preparation_level_canvas.buffer_rgba()
-    ax2.imshow(preparation_level_rgba_buffer, aspect='equal')
-    ax2.axis('off')
+    # Считаем процент по каждому типу: берём последние 5 дат, считаем среднее по каждому task_number,
+    # затем усредняем по task_number и переводим в проценты
+    x_types = list(range(1, 28))  # 1..27
+    percentages = []
 
-    fig.tight_layout()
-    fig.show()
+    for t in x_types:
+        date_map = type_date_task_values.get(t, {})
+        if not date_map:
+            percentages.append(0.0)
+            continue
 
-    fig.savefig('results.png')
-    if sys.platform.startswith('darwin'):
-        os.system('open results.png')
-    elif sys.platform.startswith('win'):
-        os.startfile('results.png')
-'''
+        last_dates = sorted(date_map.keys(), reverse=True)[:5]
+        if not last_dates:
+            percentages.append(0.0)
+            continue
+
+        task_to_values = defaultdict(list)
+        for d in last_dates:
+            for task_num, vals in date_map[d].items():
+                task_to_values[task_num].extend(vals)
+
+        if not task_to_values:
+            percentages.append(0.0)
+            continue
+
+        per_task_means = []
+        for vals in task_to_values.values():
+            if len(vals) > 0:
+                per_task_means.append(sum(vals) / len(vals))
+
+        percent = (sum(per_task_means) / len(per_task_means)) * 100 if per_task_means else 0.0
+        percentages.append(percent)
+
+    # Построение гистограммы
+    fig, ax = plt.subplots(figsize=(12, 5))
+    norm = Normalize(vmin=0, vmax=100)
+    # Цветовая схема
+    cmap = LinearSegmentedColormap.from_list("red_green", ["red", "orange", "green"])
+    colors = cmap(norm(percentages))
+    bars = ax.bar(x_types, percentages, color=colors)
+    # ---
+    for bar, val in zip(bars, percentages):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() / 2,
+                f"{val:.1f}", ha='center', va='center', color='black')
+
+    ax.set_xlabel('Номер темы')
+    ax.set_ylabel('Показатель успеваемости')
+    ax.set_title('Общий прогресс')
+    ax.set_xticks(x_types)
+    ax.set_ylim(0, 100)
+
+    return fig
+
+def result_register(task_type, number, result, right_result):
+    """
+    Помечать файл задания, добавляя к имени файла в начало '+' или '-', соответственно.
+    Оперделение пути файла проиходится через переменные task_type и number.
+    Файлы располагаются в подпапке: Тема {task_type}/Задания/
+    Имя файла: "Задание {number}.md" или "Задание {number}.png".
+    """
+    res = 1 if hashlib.md5(str(result).encode()).hexdigest() == right_result else 0
+    add_result(datetime.now().timestamp(), number, task_type, result)
+
+    def mark_task_files(task_type, number, is_correct):
+        """Ищет файлы задания (.md и .png) и переименовывает, добавляя префикс '+' или '-'"""
+        try:
+            t = int(task_type)
+            n = int(number)
+        except Exception:
+            return []
+
+        # Строим путь относительно корня репозитория, отталкиваясь от текущего файла tests/conftest.py
+        task_dir = os.path.join(repo_root(), f"Тема {t}", "Задания")
+
+        if not os.path.isdir(task_dir):
+            return []
+
+        base_names = [f"Задание {n}.md", f"Задание {n}.png"]
+        sign = '+' if is_correct else '-'
+        renamed = []
+
+        for base_name in base_names:
+            # Кандидаты: без префикса и с обоими префиксами
+            candidates = [
+                os.path.join(task_dir, base_name),
+                os.path.join(task_dir, '+' + base_name),
+                os.path.join(task_dir, '-' + base_name),
+            ]
+
+            src = None
+            for cand in candidates:
+                if os.path.exists(cand):
+                    src = cand
+                    break
+            if not src:
+                continue
+
+            dst = os.path.join(task_dir, sign + base_name)
+            try:
+                if os.path.abspath(src) != os.path.abspath(dst):
+                    os.replace(src, dst)  # перезаписываем, если существует файл с другим префиксом
+                renamed.append(dst)
+            except Exception:
+                # Игнорируем ошибки переименования, чтобы не ронять тесты
+                pass
+
+        return renamed
+
+    mark_task_files(task_type, number, res == 1)
+    fig = show_common_progress()      # открыть окно
+    fig.savefig(f'{repo_root()}/tests/common_progress.png')
+    return "Верно" if res else "Неверно"
+
+

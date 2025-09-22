@@ -1,1 +1,0 @@
-f = [x for x in open('92')]
