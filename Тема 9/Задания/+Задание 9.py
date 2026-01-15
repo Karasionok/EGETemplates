@@ -1,6 +1,6 @@
 # Решение
 count = 0
-for f in open('Задание 9.csv'):
+for f in open('+Задание 9.csv'):
     row = [int(a) for a in f.split(';')]
     rep = [b for b in row if row.count(b) > 1]
     maxx = max(row)

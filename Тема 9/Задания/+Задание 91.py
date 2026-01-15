@@ -10,6 +10,9 @@ answer = 1246
 
 #
 
-from tests.conftest import result_register
+import datetime
+import hashlib
+from tests.conftest import add_result
 if answer is not Ellipsis:
-    print(result_register(9, 91, answer, '905056c1ac1dad141560467e0a99e1cf'))
+    result = 1 if hashlib.md5(str(answer).encode()).hexdigest() == '905056c1ac1dad141560467e0a99e1cf' else 0
+    print("Верно" if result else "Неверно")
