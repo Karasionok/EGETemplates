@@ -148,3 +148,4 @@ cython_debug/
 
 # Office temporary files
 ~$*
+tests/rename_queue.db
