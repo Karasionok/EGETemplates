@@ -1,6 +1,14 @@
 # Решение
 
-
+p = range(19, 85)
+q = range(4, 52)
+f = True
+for b in range(1000):
+    for end in range(1001):
+        for x in range(10000):
+            a = range(b, end)
+            if ((x in q) <= ((not (x in p)) <= (not ((x in q) and (not (x in a)))))) == 0:
+                print(x)
 
 
 
