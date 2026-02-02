@@ -1,0 +1,20 @@
+# Решение
+
+def f(b, e):
+    if b == e:
+        return 1
+    if b > e:
+        return 0
+    return f(b + 1, e) + f(b + 2, e) + f(b * 2, e)
+
+print(f(4, 11) * f(11, 13) * f(13, 15))
+
+
+
+answer = 100
+
+#
+
+from tests.conftest import result_register
+if answer is not Ellipsis:
+    print(result_register(23, 2302, answer, 'f899139df5e1059396431415e770c6dd'))
