@@ -1,20 +1,21 @@
 # Решение
 
 def f(b, e, inc):
-    if b == e:
-        return 1
     if b > e or b == inc:
         return 0
+    if b == e:
+        return 1
+
     return f(b + 1, e, inc) + f(b * 2, e, inc) + f(b * 3, e, inc)
 
 
-print(f(9, 24, 27) * f(24, 81, 27) * f(9, 27, 24) * f(27, 81, 24))
+print(f(9, 24, 0) * f(24, 27, 0) * f(27, 81, 0))
 
 
 
 
 
-answer = 960
+answer = ...
 
 #
 
