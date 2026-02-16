@@ -138,6 +138,15 @@ body {
     margin: 1rem 0 0.5rem 0;
 }
 
+.section p {
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+}
+
+.section li {
+    margin-bottom: 1rem;
+}
+
 /* === ACCORDION SECTIONS (README) === */
 .accordion-section {
     padding: 0 !important;
@@ -295,13 +304,23 @@ tr:hover {
 }
 
 /* === TEXT FORMATTING === */
-.code {
+.code, code {
     background: var(--secondary);
     color: var(--border-light);
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
     font-family: var(--font-mono);
     font-weight: bold;
+    font-size: 1.1em;
+}
+
+/* Override Prism code block style if needed to avoid double styling */
+pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    font-size: inherit;
+    font-weight: normal;
 }
 
 ul, ol {
@@ -398,148 +417,154 @@ li {
     margin: 1rem 0;
     display: block;
     margin-left: auto;
-    margin-right: auto;
 }
 
-/* === BUTTONS === */
-.btn {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    background: var(--primary);
-    color: var(--bg-white);
-    text-decoration: none;
-    border-radius: var(--radius-sm);
-    transition: background 0.3s;
-    margin: 0.2rem;
-    cursor: pointer;
-    border: none;
+/* === FUNCTION DESCRIPTIONS === */
+.function-block {
+    background: linear-gradient(to right, #f8f9fa, #ffffff);
+    border-left: 5px solid #3498db;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s;
 }
 
-.btn:hover {
-    background: var(--primary-hover);
+.function-block:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-md);
 }
 
-.btn-success {
-    background: var(--success);
+.function-signature {
+    font-family: var(--font-mono);
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #2980b9;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(52, 152, 219, 0.2);
+    display: block;
 }
 
-.btn-success:hover {
-    background: var(--success-hover);
+.function-description {
+    font-size: 1.15em;
+    color: #34495e;
+    line-height: 1.7;
 }
 
-.btn-warning {
-    background: var(--warning);
+.function-description p {
+    margin-bottom: 0.5rem;
 }
 
-.btn-warning:hover {
-    background: var(--warning-hover);
-}
-
-/* === FORMS & INPUTS === */
-.input-group {
+/* === NEW BLOCKS === */
+.note {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    border-left: 4px solid #2196f3;
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
     margin: 1rem 0;
 }
 
-.input-group label {
-    display: block;
-    margin-bottom: 0.5rem;
+.common-mistake {
+    background: linear-gradient(135deg, #fadbd8, #f5b7b1);
+    border-left: 4px solid #e74c3c;
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1rem 0;
+}
+
+.important {
+    background: linear-gradient(135deg, #d6eaf8, #aed6f1);
+    border-left: 4px solid #3498db;
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1rem 0;
+    font-weight: 500;
+}
+
+/* Remove top margin for headers inside alert boxes to fix spacing issues */
+.note h2, .note h3, .note h4,
+.important h2, .important h3, .important h4,
+.common-mistake h2, .common-mistake h3, .common-mistake h4,
+.example-box h2, .example-box h3, .example-box h4,
+.warning h2, .warning h3, .warning h4,
+.success h2, .success h3, .success h4 {
+    margin-top: 0;
+}
+
+/* Remove bottom margin for the last element in alert boxes to fix spacing issues */
+.note > :last-child,
+.important > :last-child,
+.common-mistake > :last-child,
+.example-box > :last-child,
+.warning > :last-child,
+.success > :last-child {
+    margin-bottom: 0;
+}
+
+.highlight-math {
+    color: #e67e22;
     font-weight: bold;
+    font-size: 1.2em;
+    padding: 0 5px;
+}
+
+.operator-large {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #8e44ad;
+    margin: 0 10px;
+    display: inline-block;
+}
+
+/* === SYNTAX STRUCTURE BLOCKS === */
+.syntax-block {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-left: 4px solid #6c757d;
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+    font-family: var(--font-mono);
     color: var(--secondary);
+    overflow-x: auto;
+    position: relative;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
 }
 
-.input-group input {
-    width: 100%;
-    padding: 0.8rem;
-    border: 2px solid var(--border-input);
-    border-radius: var(--radius-sm);
-    font-size: 1rem;
+.syntax-block::before {
+    content: "Синтаксис";
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--secondary-light);
+    color: #fff;
+    font-family: var(--font-main);
+    font-size: 0.75rem;
+    padding: 2px 10px;
+    border-radius: 0 0 0 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.input-group input:focus {
-    outline: none;
-    border-color: var(--primary);
+.syntax-block pre {
+    margin: 0;
+    white-space: pre-wrap;
 }
 
-.result-box {
-    background: var(--bg-light);
-    border: 1px solid var(--border-medium);
-    border-radius: var(--radius-sm);
-    padding: 1rem;
-    margin-top: 1rem;
-    min-height: 50px;
+.syntax-block code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    font-size: 1.1em;
+    font-weight: 500;
 }
 
-/* === FOOTER === */
-.footer {
-    background: var(--secondary);
-    color: var(--bg-white);
-    text-align: center;
-    padding: 2rem;
-    margin-top: 3rem;
-}
-
-/* === BACK TO TOP BUTTON === */
-.back-to-top {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: var(--primary);
-    color: var(--bg-white);
-    padding: 1rem;
-    border-radius: 50%;
-    text-decoration: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    transition: all 0.3s;
-    opacity: 0;
-    visibility: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50px;
-    height: 50px;
-}
-
-.back-to-top.visible {
-    opacity: 1;
-    visibility: visible;
-}
-
-.back-to-top:hover {
-    background: var(--primary-hover);
-    transform: translateY(-3px);
-}
-
-/* === RESPONSIVE DESIGN === */
-@media (max-width: 768px) {
-    .header h1 {
-        font-size: 2rem;
-    }
-
-    .nav ul {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .content, .section {
-        padding: 1rem;
-    }
-    
-    .section-header {
-        padding: 15px 20px;
-        font-size: 1.2em;
-    }
-
-    table {
-        font-size: 0.9rem;
-    }
-}
-
-/* === EGE SPECIFIC STYLES === */
-.ege-2 td {
-    width: 100px;
-    text-align: center;
-}
-
-.img-10 {
-    margin: 15px;
+.syntax-block em, .syntax-block i {
+    color: var(--primary);
+    font-style: normal;
+    font-weight: bold;
+    background: rgba(52, 152, 219, 0.1);
+    padding: 0 4px;
+    border-radius: 3px;
 }
