@@ -1,8 +1,16 @@
 # Решение
+from re import *
 
 
-
-
+f = open('Задание 2401.txt').readline()
+parts = sub(r'[*ABC]+', ' ', f).split()
+lst = []
+for i in parts:
+    if len(i) != 1 and i[0] == 'D' and i[1] in '0123456789':
+        if i[-1] in 'D+-':
+            i = i[:-1]
+        lst.append(i)
+print(lst)
 
 
 
