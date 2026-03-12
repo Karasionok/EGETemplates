@@ -478,7 +478,7 @@ def show_common_progress():
             if sum(vals) > 0:
                 per_task_scores.append(sum(vals) / len(vals))
             else:
-                per_task_scores.append(1.0 / (2 ** len(vals)))
+                per_task_scores.append(0.0)
 
         percent = (sum(per_task_scores) / len(per_task_scores)) * 100 if per_task_scores else 0.0
 
