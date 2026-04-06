@@ -31,8 +31,8 @@ total = 0
 for number in lst:
     count = 0
     for cifra in range(len(number) - 1):
-        if (int(number[cifra]) % 2 == 0 and int(number[cifra]) % 2 == 1) or\
-            (int(number[cifra]) % 2 == 1 and int(number[cifra]) % 2 == 0) and\
+        if ((int(number[cifra]) % 2 == 0 and int(number[cifra]) % 2 == 1) or\
+            (int(number[cifra]) % 2 == 1 and int(number[cifra]) % 2 == 0)) and\
                 number.count(number[cifra]) <= 4:
                     count += 1
     if count == 10 and number.count('0') == 0:
