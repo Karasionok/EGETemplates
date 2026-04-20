@@ -1,4 +1,4 @@
-answer = 840
+answer = 1820
 
 #
 
