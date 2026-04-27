@@ -27,8 +27,8 @@ for i in range(9):
     right(90)
 up()
 
-for x in range(-k * 30, k * 30):
-    for y in range(-k * 30, k * 30):
+for x in range(-k * 20, k * 20):
+    for y in range(-k * 20, k * 20):
         goto(x * k, y * k)
         dot(3)
 exitonclick()
@@ -36,7 +36,7 @@ exitonclick()
 
 
 
-answer = 150
+answer = 154
 
 #
 
