@@ -21,7 +21,7 @@ for x in range(-k, k):
 exitonclick()
 
 
-answer = 69
+answer = 65
 
 #
 
