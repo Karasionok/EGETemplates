@@ -11,7 +11,7 @@ for i in range(4):
     right(90)
 for i in range(5):
     forward(5 * k)
-    right(90)
+    right(45)
 up()
 
 for x in range(-k, k):
@@ -21,7 +21,7 @@ for x in range(-k, k):
 exitonclick()
 
 
-answer = 65
+answer = 67
 
 #
 
