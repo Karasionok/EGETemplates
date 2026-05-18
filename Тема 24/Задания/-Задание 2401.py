@@ -1,5 +1,5 @@
 # Решение
-line = open('Задание 2401.txt').read()
+line = open('-Задание 2401.txt').read()
 
 
 right = 0
@@ -22,9 +22,9 @@ while right < len(line):
     right += 1
 
 print(max_sq, max_len)
-print(7+6+37+4+4+6-58+7+1-1)
+print(-7+6+37+4+4+6-58+7+1-1)
 
-answer = 13
+answer = -1
 
 #
 
