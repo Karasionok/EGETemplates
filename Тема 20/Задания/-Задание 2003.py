@@ -14,7 +14,7 @@ def game(s, e, m):
         h = [game(s - 5, e, m - 1), game(s // 3, e, m - 1)]
     else:
         h = [game(s - 5, e, m - 1)]
-    return any(h) if (m + 1) % 2 == 0 else all(h)
+    return any(h)
 
 
 print('20)', [s for s in range(20, 1000) if not game(s, 19, 1) and game(s, 19, 3)])
@@ -22,8 +22,8 @@ print('20)', [s for s in range(20, 1000) if not game(s, 19, 1) and game(s, 19, 3
 
 
 
-answer1 = 40
-answer2 = 46
+answer1 = 31
+answer2 = 37
 
 #
 
