@@ -1,5 +1,9 @@
 # Решение
 
+for n in range(1000):
+    n2 = bin(n)[2:]
+    n2 += bin(n % 4)
+    r = int(n2, 2)
 
 
 
