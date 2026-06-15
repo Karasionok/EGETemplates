@@ -34,6 +34,7 @@ def clusterize(points, eps):
 
 # Решение для файла А
 points = list(list(map(float, line.replace(',', '.').split())) for line in open('Пример 1 A.txt').readlines())
+print(points)
 clusters = clusterize(points, 1)
 center1 = cluster_centers(clusters[0])
 center2 = cluster_centers(clusters[1])

@@ -12,7 +12,7 @@ for n in range(100000000, 100000000000):
         if n2[j] == '1':
             count1 += 1
     total = abs(count0 - count1)
-    if total == 5:
+    if total > 1:
         print(n)
 
 
