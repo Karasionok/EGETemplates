@@ -1,7 +1,7 @@
 # Решение
 
 
-f = open('Задание 2403.txt').read()
+f = open('-Задание 2403.txt').read()
 right = 0
 left = 0
 flag = False
@@ -28,14 +28,20 @@ for i in range(len(f)):
         right = left + 1
         flag = False
 
-    if f[right] not in '13579' or (f[right] in '013579' and flag):
+    if f[right] not in '0123456789':
         right += 1
         if flag:
             if f[right] in 'AEIOUY':
                 count_g += 1
             elif f[right] not in 'AEIOUY0123456789':
                 count_s += 1
+    if f[right] in '0123456789' and flag:
+        flag = False
+        count_s = 0
+        count_g = 0
+        left = right - 1
 
+print(total)
 print(ans)
 
 answer = 1069746
