@@ -13,13 +13,13 @@ ans = 0
 for i in range(len(f)):
     if right == len(f):
         break
-    if f[right] in '13579' and not flag:
+    elif f[right] in '13579' and not flag:
         left = right
         right += 1
         flag = True
         count_s = 0
         count_g = 0
-    if f[right] in '13579' and flag and f[right] == f[left]:
+    elif flag and f[right] == f[left]:
         if count_s == count_g and count_s != 0:
             total.append(f[left:right + 1])
             if len(f[left:right + 1]) > maxx:
@@ -27,15 +27,17 @@ for i in range(len(f)):
                 ans = left
         right = left + 1
         flag = False
-
-    if f[right] not in '0123456789':
+    elif f[right] not in '13579' and not flag:
         right += 1
+    elif f[right] not in '0123456789':
+
         if flag:
             if f[right] in 'AEIOUY':
                 count_g += 1
             elif f[right] not in 'AEIOUY0123456789':
                 count_s += 1
-    if f[right] in '0123456789' and flag:
+        right += 1
+    elif f[right] in '0123456789' and flag:
         flag = False
         count_s = 0
         count_g = 0
@@ -44,7 +46,7 @@ for i in range(len(f)):
 print(total)
 print(ans)
 
-answer = 1069746
+answer = 4625994
 
 #
 
