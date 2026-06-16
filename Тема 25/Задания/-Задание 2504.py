@@ -8,21 +8,21 @@ def isprime(n):
 
 
 def deliteli(n):
-    d = set()
+    d = []
     for i in range(2, int(n ** 0.5) + 1):
         if n % i == 0:
-            d.add(i)
-            d.add(n // i)
+            d.append(i)
+            d.append(n // i)
     return d
 
 
 def p_deliteli(n):
     d = set()
-    for i in range(2, int(n ** 0.5) + 1):
+    for i in range(1, int(n ** 0.5) + 1):
         if n % i == 0:
             if isprime(i):
                 d.add(i)
-            if isprime(n // i):
+            if isprime(n // i) and (n // i) != n:
                 d.add(n // i)
     return d
 
@@ -35,7 +35,7 @@ def p_deliteli(n):
 #             print(n)
 
 # Ответ в виде списка чисел []
-answer = [4555723, 4555900, 4555902, 4556023, 4556054]
+answer = [4555780, 4555903, 4556079, 4556110, 4556120]
 
 #
 
